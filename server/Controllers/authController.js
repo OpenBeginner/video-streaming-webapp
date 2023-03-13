@@ -1,4 +1,6 @@
 const User = require('../Models/userModel')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 const signup = async (req, res) => {
   const { name, email, password } = req.body
@@ -23,17 +25,21 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body
   if ((!email, !password)) {
-    res.status(400).json({ msg: 'Please provide both email and password' })
+    return res
+      .status(400)
+      .json({ msg: 'Please provide both email and password' })
   }
 
   // check the user exist or not
-  const user = await User.find({ email }).select('+password')
-  // if user exists check the password
-  const correctPassword = await user.correctPassword(password, user.password)
+  const user = await User.findOne({ email }).select('+password')
 
-  if (!user?.length || !correctPassword) {
+  // if user exists check the password
+  const comparePassword = await bcrypt.compare(password, user.password)
+
+  if (!user || !comparePassword) {
     return res.status(404).json({ msg: 'incorrect email or password' })
   }
+
   // create token
   const token = await jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -54,6 +60,17 @@ const login = async (req, res) => {
     user,
   })
 }
-const logout = (req, res) => {}
+const logout = async (req, res) => {
+  // const cookies = req.cookies
+  // if (!cookies?.jwt) {
+  //   return res.status(204)
+  // }
+  // console.log(cookies)
+  res.cookie('jwt', 'LoggedOut', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  })
+  res.json({ status: 'success', msg: ' logout successfully' })
+}
 
 module.exports = { signup, login, logout }

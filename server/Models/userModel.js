@@ -31,12 +31,12 @@ UserSchema.pre('save', async function (next) {
 })
 
 // currect password compare function
-UserSchema.methods.correctPassword = async function (
-  enteredPassword,
-  userPassword
-) {
-  return await bcrypt.compare(enteredPassword, userPassword)
-}
+// UserSchema.methods.correctPassword = async function (
+//   enteredPassword,
+//   userPassword
+// ) {
+//   return await bcrypt.compare(enteredPassword, userPassword)
+// }
 
 const User = mongoose.model('User', UserSchema)
 
