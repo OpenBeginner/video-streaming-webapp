@@ -1,45 +1,45 @@
-import './Signup.css'
+import './Login.css'
 import API from '../api/axios'
 import { useEffect, useState } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-const Signup = () => {
-  const [signupData, setSignupData] = useState({})
-  const [signupError, setSignupError] = useState({})
-  const [username, setUsername] = useState('')
+const Login = () => {
+  const [loginData, setLoginData] = useState({})
+  const [loginError, setLoginError] = useState(false)
+  const [loginSuccess, setLoginSuccess] = useState(false)
+  const [token, setToken] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
   const getApiData = async () => {
     try {
-      const res = await API.post('/users/signup', {
-        name: username,
+      const res = await API.post('/users/login', {
         email,
         password,
       })
-      setSignupData(res.data)
-      console.log(res.data.status)
+      setLoginData(res.data)
+      setLoginSuccess(true)
       if (res.data.status === 'success') {
         notifySuccess()
       }
+      console.log(res.data)
     } catch (err) {
       console.log(err)
-      setSignupError(err)
+      setLoginError(true)
       notifyError()
     }
   }
 
   const onSubmit = async (e) => {
     e.preventDefault()
-
     await getApiData()
-    setUsername('')
     setEmail('')
     setPassword('')
   }
 
   const notifySuccess = () => {
-    return toast.success(signupData.msg, {
+    return toast.success('Login Successful', {
       position: 'bottom-center',
       autoClose: 5000,
       hideProgressBar: false,
@@ -52,7 +52,7 @@ const Signup = () => {
   }
   const notifyError = () => {
     return toast.error(
-      'Error Creating user! Check out the filled details again or try after some time.',
+      'Login Failed! Check out the filled details again or try after some time.',
       {
         position: 'bottom-center',
         autoClose: 5000,
@@ -67,24 +67,15 @@ const Signup = () => {
   }
 
   return (
-    <div className='signup-container'>
+    <div className='login-container'>
       <ToastContainer />
       <div className='main-heading-container'>
-        <h1 className='main-heading'>SignUp</h1>
+        <h1 className='main-heading'>Login</h1>
 
         <div className='heading-box'></div>
       </div>
       <form>
         <div className='form-container'>
-          <div className='input-div'>
-            <label>Username</label>
-            <input
-              type='text'
-              className='input input-username'
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
           <div className='input-div'>
             <label>Email</label>
             <input
@@ -104,7 +95,7 @@ const Signup = () => {
             />
           </div>
           <button className='submit-button' onClick={onSubmit}>
-            Signup
+            Login
           </button>
         </div>
       </form>
@@ -112,4 +103,4 @@ const Signup = () => {
   )
 }
 
-export default Signup
+export default Login
