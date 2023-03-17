@@ -60,6 +60,37 @@ const login = async (req, res) => {
     user,
   })
 }
+const verifyToken = async (req, res, next) => {
+  let token
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1]
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt
+  }
+  if (!token) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'You are not loggedIn! Please Login to get access',
+    })
+  }
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
+
+  // verify User
+  const currentUser = await User.findById(decoded.id)
+  if (!currentUser) {
+    return res.status(401).json({
+      status: 'error',
+      message:
+        'there is not user found with the token! Please login again to access  ',
+    })
+  }
+  req.user = currentUser
+  req.locals.user = currentUser
+  next()
+}
 const logout = async (req, res) => {
   // const cookies = req.cookies
   // if (!cookies?.jwt) {
@@ -73,4 +104,4 @@ const logout = async (req, res) => {
   res.json({ status: 'success', msg: ' logout successfully' })
 }
 
-module.exports = { signup, login, logout }
+module.exports = { signup, login, logout, verifyToken }

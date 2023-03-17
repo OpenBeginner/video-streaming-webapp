@@ -2,6 +2,7 @@ import './Login.css'
 import API from '../api/axios'
 import { useEffect, useState } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 import 'react-toastify/dist/ReactToastify.css'
 
 const Login = () => {
@@ -11,6 +12,8 @@ const Login = () => {
   const [token, setToken] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  const navigate = useNavigate()
 
   const getApiData = async () => {
     try {
@@ -22,6 +25,9 @@ const Login = () => {
       setLoginSuccess(true)
       if (res.data.status === 'success') {
         notifySuccess()
+        setTimeout(() => {
+          navigate('/')
+        }, 3000)
       }
       console.log(res.data)
     } catch (err) {
@@ -41,7 +47,7 @@ const Login = () => {
   const notifySuccess = () => {
     return toast.success('Login Successful', {
       position: 'bottom-center',
-      autoClose: 5000,
+      autoClose: 3000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -83,6 +89,7 @@ const Login = () => {
               className='input input-email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
           <div className='input-div'>
@@ -92,6 +99,7 @@ const Login = () => {
               className='input input-password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
           <button className='submit-button' onClick={onSubmit}>
