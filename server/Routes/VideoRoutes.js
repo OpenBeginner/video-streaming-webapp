@@ -1,6 +1,16 @@
 const express = require('express')
-const router = require('./userRoutes')
 router = express.Router()
+const authControllers = require('../Controllers/authController')
+const videoControllers = require('../Controllers/videoController')
 
-router.route('/getAllVideos').get(res.send('This is get all videos route'))
-router.route('/upload').post(res.send('This is upload route'))
+router.route('/getAllVideos').get((req, res) => {
+  res.send('This is get all videos route')
+})
+router
+  .route('/upload')
+  .post(
+    authControllers.verifyToken,
+    videoControllers.uploadVideo,
+    videoControllers.saveVideoData
+  )
+module.exports = router

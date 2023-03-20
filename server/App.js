@@ -5,6 +5,7 @@ const app = express()
 require('express-async-errors')
 
 const userRoutes = require('./Routes/userRoutes')
+const videoRoutes = require('./Routes/videoRoutes')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(
@@ -16,5 +17,6 @@ app.use(
 app.use(express.json())
 
 app.use('/api/users', userRoutes)
+app.use('/api/videos', videoRoutes)
 
 module.exports = app

@@ -1,6 +1,7 @@
 const User = require('../Models/userModel')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const { promisify } = require('util')
 
 const signup = async (req, res) => {
   const { name, email, password } = req.body
@@ -78,7 +79,7 @@ const verifyToken = async (req, res, next) => {
   }
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
 
-  // verify User
+  // verify User exist
   const currentUser = await User.findById(decoded.id)
   if (!currentUser) {
     return res.status(401).json({
@@ -88,7 +89,7 @@ const verifyToken = async (req, res, next) => {
     })
   }
   req.user = currentUser
-  req.locals.user = currentUser
+  res.locals.user = currentUser
   next()
 }
 const logout = async (req, res) => {
